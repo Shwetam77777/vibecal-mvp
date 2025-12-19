@@ -3,12 +3,11 @@ import datetime
 import pytz
 import requests
 from streamlit_lottie import st_lottie
-import time
 
-# --- 1. PAGE CONFIGURATION ---
-st.set_page_config(page_title="VibeCal: Real Auto", page_icon="📅", layout="centered")
+# --- 1. CONFIGURATION ---
+st.set_page_config(page_title="VibeCal: Live Universe", page_icon="🌍", layout="wide")
 
-# --- 2. SAFETY ANIMATION LOADER ---
+# --- 2. ASSETS & ANIMATION LOADER ---
 def load_lottieurl(url):
     try:
         r = requests.get(url)
@@ -18,151 +17,135 @@ def load_lottieurl(url):
     except:
         return None
 
-def run_animation(url, height=150):
+def run_animation(url, height=200, key="anim"):
     data = load_lottieurl(url)
     if data:
-        st_lottie(data, height=height)
-    else:
-        st.warning("⚠️ Loading visual...")
+        st_lottie(data, height=height, key=key)
 
-# --- 3. REAL TIME & DATE INTELLIGENCE ---
+# --- 3. THE INTELLIGENCE ENGINE (Time + Season + Festival) 🧠 ---
+
 IST = pytz.timezone('Asia/Kolkata')
 now = datetime.datetime.now(IST)
-today_date = now.date()
+today = now.date()
 current_hour = now.hour
+current_month = now.month
 
-# --- 4. AUTO-DETECT EVENT LOGIC (The Brain) 🧠 ---
-# Default Vibe
-vibe = "Standard"
-event_msg = f"Today is {now.strftime('%A, %d %B')}."
+# A. Determine Season (Revolution)
+if current_month in [12, 1, 2]:
+    season = "Winter"
+    season_icon = "❄️"
+    season_anim = "https://lottie.host/5d645100-264e-4f0e-920f-08df6c205730/X7u6f3y7v2.json" # Snow
+elif current_month in [3, 4, 5]:
+    season = "Spring"
+    season_icon = "🌸"
+    season_anim = "https://lottie.host/4933a925-5e6e-41df-a524-7eb32662058e/s6y3w8Yj9w.json" # Flowers
+elif current_month in [6, 7, 8]:
+    season = "Summer"
+    season_icon = "☀️"
+    season_anim = "https://lottie.host/9355462c-6379-44d8-9477-6287950c0576/8YI5Z5vQ7e.json" # Sun
+else:
+    season = "Autumn"
+    season_icon = "🍂"
+    season_anim = "https://lottie.host/6e4092d6-1135-420a-b223-9565507c5a03/p1v7S9x3k2.json" # Leaves
 
-# Check for Special Dates (Automatic)
-if today_date.month == 1 and today_date.day == 1:
-    vibe = "New Year"
-    event_msg = "🎉 Happy New Year! Welcome to 2026!"
-elif today_date.month == 12 and today_date.day == 25:
-    vibe = "Christmas"
-    event_msg = "🎄 Merry Christmas!"
-elif today_date.month == 10 and today_date.day == 20: # Example Diwali Date
-    vibe = "Diwali"
-    event_msg = "🪔 Happy Diwali!"
-# Add your birthday here (Example: Dec 25)
-elif today_date.month == 12 and today_date.day == 20: 
-    vibe = "Birthday"
-    event_msg = "🎂 Happy Birthday Shweta!"
-
-# --- 5. TEST MODE (To show clients fireworks anytime) ---
-with st.sidebar:
-    st.header("🛠️ Developer Tools")
-    test_mode = st.checkbox("Force Test Event")
-    if test_mode:
-        vibe = st.selectbox("Simulate Event:", ["New Year", "Birthday", "Christmas", "Standard"])
-        event_msg = f"Simulating: {vibe}"
-
-# --- 6. BACKGROUND LOGIC ---
+# B. Determine Time of Day (Rotation)
 if 5 <= current_hour < 12:
     period = "Morning"
-    bg_image = "https://images.unsplash.com/photo-1470252649378-9c29740c9fa8?q=80&w=2070"
-    greeting = "Good Morning!"
+    greeting = "Rise & Shine"
+    bg_image = "https://images.unsplash.com/photo-1470252649378-9c29740c9fa8?q=80&w=2070" # Sunrise
 elif 12 <= current_hour < 17:
     period = "Afternoon"
-    bg_image = "https://images.unsplash.com/photo-1596524430615-b46475ddff6e?q=80&w=2070"
-    greeting = "Focus Mode On"
+    greeting = "Focus Mode"
+    bg_image = "https://images.unsplash.com/photo-1604079628040-94301bb21b91?q=80&w=2070" # Bright Sky
 elif 17 <= current_hour < 20:
     period = "Evening"
-    bg_image = "https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?q=80&w=2113"
     greeting = "Good Evening"
+    bg_image = "https://images.unsplash.com/photo-1505322022379-7c3353ee6291?q=80&w=2000" # Sunset
 else:
     period = "Night"
-    bg_image = "https://images.unsplash.com/photo-1519681393798-2f13fbe68138?q=80&w=2070"
-    greeting = "Good Night"
+    greeting = "Sweet Dreams"
+    bg_image = "https://images.unsplash.com/photo-1506318137071-a8bcbf6755dd?q=80&w=2070" # Stars
 
-# --- 7. CSS STYLING ---
-st.markdown(
-    f"""
+# C. Festival Override (The Special Logic)
+festival_mode = False
+festival_name = ""
+
+if today.month == 1 and today.day == 1:
+    festival_mode = True
+    festival_name = "New Year"
+    bg_image = "https://images.unsplash.com/photo-1467810563316-b5476525c0f9?q=80&w=2069" # Fireworks Sky
+    season_anim = "https://lottie.host/80e7228a-7232-4277-b952-4fd77717462c/8h3v5s9x1.json" # Fireworks Lottie
+
+elif today.month == 12 and today.day == 25:
+    festival_mode = True
+    festival_name = "Christmas"
+    # Christmas Background
+
+# --- 4. CSS STYLING (Glassmorphism) ---
+st.markdown(f"""
     <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&display=swap');
+    
     .stApp {{
-        background: url("{bg_image}");
+        background-image: url("{bg_image}");
         background-size: cover;
         background-attachment: fixed;
+        font-family: 'Poppins', sans-serif;
     }}
-    h1, h2, h3, p, div, span, label {{
-        color: white !important;
-        text-shadow: 0px 1px 3px rgba(0,0,0,0.8);
+    
+    /* Glass Card */
+    .glass {{
+        background: rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(15px);
+        -webkit-backdrop-filter: blur(15px);
+        border-radius: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        padding: 30px;
+        color: white;
+        text-align: center;
+        box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
     }}
-    /* Glass Container */
-    [data-testid="stVerticalBlock"] > [style*="flex-direction: column;"] > [data-testid="stVerticalBlock"] {{
-        background-color: rgba(255, 255, 255, 0.15);
-        border-radius: 15px;
-        padding: 20px;
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(255,255,255,0.2);
-    }}
+    
+    h1 {{ text-shadow: 0 2px 4px rgba(0,0,0,0.5); font-weight: 600; }}
+    p {{ text-shadow: 0 1px 2px rgba(0,0,0,0.5); }}
     </style>
-    """,
-    unsafe_allow_html=True
-)
+""", unsafe_allow_html=True)
 
-# --- 8. MAIN DISPLAY ---
+# --- 5. VISUAL LAYOUT (Testing Part 1) ---
 
-with st.container():
-    st.title(f"{greeting}")
-    st.markdown(f"### 🗓️ {now.strftime('%A, %d %B %Y')}")
-    st.write(f"**Status:** {event_msg}")
+col1, col2, col3 = st.columns([1, 2, 1])
 
-    # AUTO-PLAY ANIMATIONS (No Buttons Needed)
-    if vibe == "New Year":
-        run_animation("https://lottie.host/80e7228a-7232-4277-b952-4fd77717462c/8h3v5s9x1.json") # Fireworks
-        st.balloons() # Real Balloons
-    elif vibe == "Birthday":
-        run_animation("https://lottie.host/1785237c-3225-41d6-857e-12501004f7c2/lqD0b8X9v2.json") # Cake
+with col2:
+    # Main Glass Card
+    st.markdown('<div class="glass">', unsafe_allow_html=True)
+    
+    # 1. Display Greeting & Time
+    st.title(f"{greeting}!")
+    st.markdown(f"### {now.strftime('%I:%M %p')}")
+    st.caption(f"📍 India • {period}")
+    
+    st.markdown("---")
+    
+    # 2. Display The Live Environment (Season/Festival)
+    if festival_mode:
+        st.markdown(f"## 🎉 It's {festival_name}!")
+        run_animation(season_anim, height=200)
         st.balloons()
-    elif vibe == "Christmas":
-        run_animation("https://lottie.host/5d645100-264e-4f0e-920f-08df6c205730/X7u6f3y7v2.json") # Snow
-        st.snow()
     else:
-        # Standard Sun/Moon
-        if period == "Night":
-            run_animation("https://lottie.host/a438702b-a010-449e-b7d5-d85202860d5b/b3p2R5s8x1.json")
-        else:
-            run_animation("https://lottie.host/9355462c-6379-44d8-9477-6287950c0576/8YI5Z5vQ7e.json")
+        st.markdown(f"### Season: {season} {season_icon}")
+        st.write(f"The environment is set to **{season}** based on real data.")
+        # Play the Season Animation (Snow/Sun/Flowers)
+        run_animation(season_anim, height=180)
 
-# --- 9. REAL CALENDAR DISPLAY ---
-st.write("---")
-with st.container():
-    st.header("📅 Your Schedule")
-    
-    # Simple Calendar Grid Layout
-    col1, col2 = st.columns([1, 2])
-    
-    with col1:
-        # User picks a date to view
-        d = st.date_input("Go to Date:", today_date)
-    
-    with col2:
-        # Dynamic Schedule Display
-        st.write(f"**Events for {d.strftime('%d %B')}:**")
-        
-        if d.month == 1 and d.day == 1:
-            st.success("🎉 12:00 AM - New Year Celebration")
-            st.info("🗓️ 11:00 AM - Family Lunch")
-        elif d == today_date:
-            st.info("🕒 09:00 AM - Working on TechNova Blog")
-            st.info("🕒 02:00 PM - VibeCal Testing")
-            st.warning("🕒 06:00 PM - Freelance Client Search")
-        else:
-            st.write("No events scheduled yet.")
-            if st.button("➕ Add Event"):
-                st.toast("Event Saved!")
+    st.markdown('</div>', unsafe_allow_html=True)
 
-# --- 10. CONNECTIVITY ---
-st.write("---")
-with st.container():
-    st.header("📲 Quick Connect")
-    c1, c2 = st.columns(2)
-    with c1:
-        msg = st.text_input("Quick Message:", "Hi! Happy New Year!")
-    with c2:
-        st.write("") # Spacer
-        st.link_button("🚀 Send via WhatsApp", f"https://wa.me/?text={msg}")
+# --- 6. DEVELOPER TOOLS (Test The Seasons) ---
+with st.sidebar:
+    st.header("🛠️ God Mode (Test)")
+    st.write("Override the real sensors to test visuals:")
+    
+    if st.button("❄️ Test Winter"):
+        st.snow()
+    if st.button("🎆 Test New Year"):
+        st.balloons()
 
