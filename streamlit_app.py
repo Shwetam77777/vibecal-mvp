@@ -5,10 +5,10 @@ import requests
 from streamlit_lottie import st_lottie
 import time
 
-# --- 1. SETUP PAGE CONFIG ---
-st.set_page_config(page_title="VibeCal: AI Calendar", page_icon="📅", layout="centered")
+# --- 1. PAGE CONFIGURATION ---
+st.set_page_config(page_title="VibeCal: Ultimate", page_icon="✨", layout="wide")
 
-# --- 2. FUNCTION TO LOAD ANIMATIONS ---
+# --- 2. ASSETS & ANIMATIONS ---
 def load_lottieurl(url):
     try:
         r = requests.get(url)
@@ -18,152 +18,162 @@ def load_lottieurl(url):
     except:
         return None
 
-# --- 3. TIME & THEME LOGIC ---
+# --- 3. TIME & SCENARIO LOGIC ---
 IST = pytz.timezone('Asia/Kolkata')
 now = datetime.datetime.now(IST)
-current_hour = now.hour
+hour = now.hour
 
-# Theme Settings
-if 5 <= current_hour < 12:
+# Dynamic Backgrounds (Real Photos)
+if 5 <= hour < 12:
     period = "Morning"
-    greeting = "Rise & Shine! ☀️"
-    # Morning Gradient (Soft Orange)
-    bg_gradient = "linear-gradient(135deg, #f5af19 0%, #f12711 100%);"
-    card_color = "rgba(255, 255, 255, 0.2)"
-    text_color = "#ffffff"
-    lottie_url = "https://lottie.host/9355462c-6379-44d8-9477-6287950c0576/8YI5Z5vQ7e.json"
-elif 12 <= current_hour < 17:
+    # Morning Landscape Image
+    bg_image = "https://images.unsplash.com/photo-1470252649378-9c29740c9fa8?q=80&w=2070&auto=format&fit=crop"
+    greeting = "Good Morning! 🌸"
+    theme_color = "rgba(255, 255, 255, 0.7)" # Light Glass
+    text_color = "#2c3e50"
+elif 12 <= hour < 17:
     period = "Afternoon"
-    greeting = "Good Afternoon! 🌤️"
-    # Afternoon Gradient (Bright Blue)
-    bg_gradient = "linear-gradient(135deg, #2980B9 0%, #6DD5FA 100%);"
-    card_color = "rgba(255, 255, 255, 0.25)"
-    text_color = "#ffffff"
-    lottie_url = "https://lottie.host/9355462c-6379-44d8-9477-6287950c0576/8YI5Z5vQ7e.json"
-elif 17 <= current_hour < 20:
+    # Bright Blue Sky/Office Image
+    bg_image = "https://images.unsplash.com/photo-1596524430615-b46475ddff6e?q=80&w=2070&auto=format&fit=crop"
+    greeting = "Focus Mode On 🚀"
+    theme_color = "rgba(255, 255, 255, 0.85)"
+    text_color = "#1a1a1a"
+elif 17 <= hour < 20:
     period = "Evening"
-    greeting = "Good Evening! 🌇"
-    # Evening Gradient (Purple/Pink)
-    bg_gradient = "linear-gradient(135deg, #654ea3 0%, #eaafc8 100%);"
-    card_color = "rgba(0, 0, 0, 0.2)" # Darker glass for evening
+    # Sunset City Image
+    bg_image = "https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?q=80&w=2113&auto=format&fit=crop"
+    greeting = "Good Evening 🌆"
+    theme_color = "rgba(0, 0, 0, 0.6)" # Dark Glass
     text_color = "#ffffff"
-    lottie_url = "https://lottie.host/8b3f5b72-2d17-48a6-80f6-02607593c78d/Q5P9s9s8x1.json"
 else:
     period = "Night"
-    greeting = "Sweet Dreams! 🌙"
-    # Night Gradient (Deep Space Blue)
-    bg_gradient = "linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);"
-    card_color = "rgba(255, 255, 255, 0.1)"
+    # Starry Night or Night City
+    bg_image = "https://images.unsplash.com/photo-1519681393798-2f13fbe68138?q=80&w=2070&auto=format&fit=crop"
+    greeting = "Magical Night ✨"
+    theme_color = "rgba(10, 10, 30, 0.75)" # Deep Dark Glass
     text_color = "#e0e0e0"
-    lottie_url = "https://lottie.host/a438702b-a010-449e-b7d5-d85202860d5b/b3p2R5s8x1.json"
 
-# --- 4. ADVANCED CSS (The UI Magic) ---
+# --- 4. CSS FOR IMMERSIVE LOOK ---
 st.markdown(
     f"""
     <style>
-    /* Import Google Font */
-    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
-
-    /* Global Settings */
-    html, body, [class*="css"] {{
-        font-family: 'Poppins', sans-serif;
-    }}
+    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;500;700&display=swap');
     
     .stApp {{
-        background-image: {bg_gradient};
+        background: url("{bg_image}");
         background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
         background-attachment: fixed;
     }}
-
-    /* Glassmorphism Card Style */
-    .glass-card {{
-        background: {card_color};
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-        border-radius: 20px;
-        border: 1px solid rgba(255, 255, 255, 0.18);
-        padding: 20px;
-        margin-bottom: 20px;
-        box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+    
+    /* Glassmorphism Container */
+    .glass-container {{
+        background: {theme_color};
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border-radius: 25px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        padding: 30px;
+        margin: 20px auto;
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+        color: {text_color};
     }}
-
-    /* Text Colors */
-    h1, h2, h3, p, label {{
+    
+    h1, h2, h3, p, label, div {{
+        font-family: 'Montserrat', sans-serif !important;
         color: {text_color} !important;
-        text-shadow: 0px 2px 4px rgba(0,0,0,0.2);
     }}
     
-    /* Stylish Buttons */
+    /* Button Styling */
     .stButton>button {{
-        width: 100%;
-        background-color: rgba(255, 255, 255, 0.9);
-        color: #333 !important;
+        border-radius: 50px;
+        font-weight: bold;
         border: none;
-        border-radius: 12px;
-        padding: 10px 20px;
-        font-weight: 600;
-        transition: all 0.3s ease;
-    }}
-    .stButton>button:hover {{
-        transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-        background-color: white;
+        transition: 0.3s;
     }}
     
-    /* Input Fields styling */
-    .stDateInput > div > div > input {{
-        background-color: rgba(255,255,255,0.8);
-        border-radius: 10px;
-        color: black;
-    }}
+    /* Hide Default Elements */
+    #MainMenu {{visibility: hidden;}}
+    footer {{visibility: hidden;}}
     </style>
     """,
     unsafe_allow_html=True
 )
 
-# --- 5. APP LAYOUT WITH GLASS CARDS ---
+# --- 5. THE MAIN INTERFACE ---
+col_main, col_padding = st.columns([1, 0.1])
 
-# Header Section
-st.markdown('<div class="glass-card">', unsafe_allow_html=True)
-st.title(f"VibeCal")
-st.markdown(f"### {greeting}")
-st.write(f"📍 **India Time:** {now.strftime('%I:%M %p')}")
-lottie_json = load_lottieurl(lottie_url)
-if lottie_json:
-    st_lottie(lottie_json, height=180, key="anim")
-st.markdown('</div>', unsafe_allow_html=True)
+with col_main:
+    # --- HEADER SECTION ---
+    st.markdown(f'<div class="glass-container">', unsafe_allow_html=True)
+    st.title(f"{greeting}")
+    st.markdown(f"### {now.strftime('%A, %d %B %Y')}")
+    st.caption(f"📍 Location: India • {period} Edition")
+    st.markdown('</div>', unsafe_allow_html=True)
 
-# Celebration Section
-st.markdown('<div class="glass-card">', unsafe_allow_html=True)
-col_a, col_b = st.columns([3, 1])
-with col_a:
-    st.markdown("#### 🎉 Special Occasion?")
-    st.write("Click if you're celebrating something today!")
-with col_b:
-    if st.button("Celebrate!"):
+    # --- FIREWORKS & FESTIVALS ---
+    st.markdown(f'<div class="glass-container">', unsafe_allow_html=True)
+    st.markdown("### 🎭 Vibe Controller")
+    
+    vibe_mode = st.radio("Select Current Vibe:", 
+                         ["Standard Mode", "🎉 New Year / Party", "🎂 Birthday", "❄️ Winter Snow"], 
+                         horizontal=True)
+
+    if vibe_mode == "🎉 New Year / Party":
+        # Fireworks Animation Lottie
+        lottie_fireworks = load_lottieurl("https://lottie.host/80e7228a-7232-4277-b952-4fd77717462c/8h3v5s9x1.json")
+        if lottie_fireworks:
+            st_lottie(lottie_fireworks, height=200, key="fireworks")
         st.balloons()
-        st.success("Yay!")
-st.markdown('</div>', unsafe_allow_html=True)
+    
+    elif vibe_mode == "❄️ Winter Snow":
+        st.snow()
+        st.info("Stay warm! ☕")
 
-# Calendar & AI Section
-st.markdown('<div class="glass-card">', unsafe_allow_html=True)
-st.markdown("#### 📅 Your Smart Schedule")
-col1, col2 = st.columns(2)
+    st.markdown('</div>', unsafe_allow_html=True)
 
-with col1:
-    selected_date = st.date_input("Select Date", now)
+    # --- CONNECTIVITY CENTER (WhatsApp/Email) ---
+    st.markdown(f'<div class="glass-container">', unsafe_allow_html=True)
+    st.markdown("### 📲 Connectivity Hub")
+    st.write("Connect with people instantly directly from your calendar.")
 
-with col2:
-    st.info("💡 **AI Tip:** The stars align for creative work tonight. Write that blog post!")
+    col1, col2 = st.columns(2)
+    
+    # Message Logic
+    with col1:
+        contact_name = st.text_input("Name", "Client")
+        message_body = st.text_area("Message", f"Hi {contact_name}, wishing you a happy {period}!")
+    
+    with col2:
+        st.write("###### Select Platform to Send:")
+        
+        # WhatsApp Logic (Deep Link)
+        whatsapp_url = f"https://wa.me/?text={message_body.replace(' ', '%20')}"
+        st.link_button("🚀 Send via WhatsApp", whatsapp_url)
+        
+        # Email Logic (Deep Link)
+        email_url = f"mailto:?subject=Greeting%20from%20VibeCal&body={message_body.replace(' ', '%20')}"
+        st.link_button("📧 Send via Email", email_url)
+        
+        st.markdown("*Note: This opens your secure app directly.*")
+    
+    st.markdown('</div>', unsafe_allow_html=True)
 
-st.markdown("---")
-st.markdown("#### 🤖 AI Social Manager")
-st.write("Upcoming: **Client Meeting (Tomorrow)**")
+    # --- CALENDAR & AI ---
+    st.markdown(f'<div class="glass-container">', unsafe_allow_html=True)
+    st.markdown("### 📅 Smart Schedule")
+    d = st.date_input("Plan for:", now)
+    
+    if st.button("🔮 Ask AI for Day Plan"):
+        with st.spinner("Analyzing weather and schedule..."):
+            time.sleep(1.5)
+            st.success("Plan Generated!")
+            if period == "Morning":
+                st.write("✅ **10:00 AM:** Deep Work (Energy High)")
+                st.write("✅ **01:00 PM:** Lunch & Walk")
+            else:
+                st.write("✅ **08:00 PM:** Review Goals")
+                st.write("✅ **10:00 PM:** Sleep Mode 😴")
+    st.markdown('</div>', unsafe_allow_html=True)
 
-if st.button("Draft WhatsApp Reminder 💬"):
-    with st.spinner("AI Agent is thinking..."):
-        time.sleep(1)
-        st.success("Draft Ready:")
-        st.code("Hi! Confirming our meeting for tomorrow at 10 AM. See you there! 🚀", language="text")
-
-st.markdown('</div>', unsafe_allow_html=True)
