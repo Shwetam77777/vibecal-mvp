@@ -1,149 +1,145 @@
 import streamlit as st
 import datetime
 import pytz
-import requests
-from streamlit_lottie import st_lottie
 
-# --- 1. CONFIGURATION ---
-st.set_page_config(page_title="VibeCal OS", page_icon="🌍", layout="centered")
+# --- 1. SETUP ---
+st.set_page_config(page_title="VibeCal Part 1", page_icon="🎨", layout="centered")
 
-# --- 2. ASSETS & ANIMATION LOADER ---
-def load_lottieurl(url):
-    try:
-        r = requests.get(url)
-        if r.status_code != 200:
-            return None
-        return r.json()
-    except:
-        return None
-
-def run_animation(url, height=150, key="anim"):
-    data = load_lottieurl(url)
-    if data:
-        st_lottie(data, height=height, key=key)
+# --- 2. USER SETTINGS (SIDEBAR) ---
+# Here we let the user choose their "Personality"
+st.sidebar.header("🎨 Appearance")
+theme_style = st.sidebar.radio("Choose App Style:", ["🌸 Aesthetic (Girly)", "💼 Business (Pro)"])
 
 # --- 3. THE LIVE INTELLIGENCE ENGINE 🧠 ---
-
+# Calculating Time, Season, and Light
 IST = pytz.timezone('Asia/Kolkata')
 now = datetime.datetime.now(IST)
-current_month = now.month
-current_hour = now.hour
+hour = now.hour
+month = now.month
 
-# A. Season Logic (Dec = Winter)
-if current_month in [12, 1, 2]:
-    season = "Winter"
-    season_emoji = "❄️"
-    # Pretty Snow Animation
-    season_anim = "https://lottie.host/5d645100-264e-4f0e-920f-08df6c205730/X7u6f3y7v2.json"
-elif current_month in [3, 4, 5]:
-    season = "Spring"
-    season_emoji = "🌸"
-    season_anim = "https://lottie.host/4933a925-5e6e-41df-a524-7eb32662058e/s6y3w8Yj9w.json"
-elif current_month in [6, 7, 8]:
-    season = "Summer"
-    season_emoji = "☀️"
-    season_anim = "https://lottie.host/9355462c-6379-44d8-9477-6287950c0576/8YI5Z5vQ7e.json"
+# A. Day/Night Rotation (Auto-Detect)
+if 6 <= hour < 18:
+    time_cycle = "Day"
+    lighting = "Light"
 else:
-    season = "Autumn"
-    season_emoji = "🍂"
-    season_anim = "https://lottie.host/6e4092d6-1135-420a-b223-9565507c5a03/p1v7S9x3k2.json"
+    time_cycle = "Night"
+    lighting = "Dark"
 
-# B. Time Logic (Backgrounds)
-if 5 <= current_hour < 12:
-    period = "Morning"
-    bg_image = "https://images.unsplash.com/photo-1470252649378-9c29740c9fa8?q=80&w=2070"
-elif 12 <= current_hour < 17:
-    period = "Afternoon"
-    bg_image = "https://images.unsplash.com/photo-1596524430615-b46475ddff6e?q=80&w=2070"
-elif 17 <= current_hour < 20:
-    period = "Evening"
-    bg_image = "https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?q=80&w=2113"
+# B. Season/Revolution (Auto-Detect)
+if month in [12, 1, 2]:
+    season = "Winter ❄️"
+elif month in [3, 4, 5]:
+    season = "Spring 🌸"
+elif month in [6, 7, 8]:
+    season = "Summer ☀️"
 else:
-    period = "Night"
-    bg_image = "https://images.unsplash.com/photo-1519681393798-2f13fbe68138?q=80&w=2070"
+    season = "Autumn 🍂"
 
-# --- 4. PREMIUM CSS (DARK GLASS THEME) ---
+# C. Occasion Logic (Example: New Year)
+is_festival = False
+festival_name = ""
+if now.day == 1 and now.month == 1:
+    is_festival = True
+    festival_name = "New Year 🎉"
+
+# --- 4. THEME LOGIC (CSS MAGIC) ---
+
+# Default Variables
+bg_url = ""
+card_bg = ""
+text_color = ""
+font = ""
+
+# LOGIC: Combine "User Style" + "Time of Day"
+
+if theme_style == "🌸 Aesthetic (Girly)":
+    font = "Pacifico, cursive" # Cute font
+    if time_cycle == "Day":
+        # Day + Aesthetic = Soft Pink/Peach Clouds
+        bg_url = "https://images.unsplash.com/photo-1614850523459-c2f4c699c52e?q=80&w=2070"
+        card_bg = "rgba(255, 255, 255, 0.4)" # Milky Glass
+        text_color = "#4a4a4a"
+    else:
+        # Night + Aesthetic = Purple Dreamy Stars
+        bg_url = "https://images.unsplash.com/photo-1534293507204-0824e4c29415?q=80&w=2070"
+        card_bg = "rgba(40, 0, 60, 0.6)" # Purple Glass
+        text_color = "#ffe6f2"
+
+elif theme_style == "💼 Business (Pro)":
+    font = "Inter, sans-serif" # Clean font
+    if time_cycle == "Day":
+        # Day + Business = Clean White/Blue Office
+        bg_url = "https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=2069"
+        card_bg = "rgba(255, 255, 255, 0.85)" # White Clean Box
+        text_color = "black"
+    else:
+        # Night + Business = Dark City Skyline
+        bg_url = "https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?q=80&w=2113"
+        card_bg = "rgba(0, 0, 0, 0.7)" # Black Glass
+        text_color = "white"
+
+# Override for Festival (If it's New Year, make it sparkly!)
+if is_festival:
+    bg_url = "https://images.unsplash.com/photo-1467810563316-b5476525c0f9?q=80&w=2069"
+
+# --- 5. INJECTING THE CSS ---
 st.markdown(f"""
     <style>
+    /* Import Fonts */
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;600&display=swap');
-    
-    /* Background Image */
+    @import url('https://fonts.googleapis.com/css2?family=Pacifico&display=swap');
+
     .stApp {{
-        background-image: url("{bg_image}");
+        background-image: url("{bg_url}");
         background-size: cover;
         background-position: center;
         background-attachment: fixed;
     }}
     
-    /* Global Font */
-    html, body, [class*="css"] {{
-        font-family: 'Inter', sans-serif;
-    }}
-
-    /* DARK GLASS CARD (The Fix) */
-    .premium-card {{
-        background: rgba(0, 0, 0, 0.6); /* Darker background for contrast */
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
-        border-radius: 24px;
-        border: 1px solid rgba(255, 255, 255, 0.1);
+    .glass-card {{
+        background: {card_bg};
+        backdrop-filter: blur(15px);
+        border-radius: 20px;
         padding: 40px;
         text-align: center;
-        box-shadow: 0 10px 40px rgba(0,0,0,0.5);
-        color: white;
-        max-width: 500px;
-        margin: auto;
-    }}
-
-    /* Typography */
-    h1 {{
-        color: white !important;
-        font-weight: 600;
-        letter-spacing: -1px;
-        margin-bottom: 0px;
-    }}
-    p {{
-        color: #e0e0e0 !important;
-        font-size: 1.1rem;
-    }}
-    hr {{
-        border-color: rgba(255,255,255,0.2);
+        border: 1px solid rgba(255,255,255, 0.2);
+        box-shadow: 0 4px 30px rgba(0,0,0,0.1);
     }}
     
-    /* Hide Streamlit Elements */
-    #MainMenu {{visibility: hidden;}}
-    footer {{visibility: hidden;}}
-    header {{visibility: hidden;}}
+    h1, h2, h3, p {{
+        color: {text_color} !important;
+        font-family: {font};
+    }}
     </style>
 """, unsafe_allow_html=True)
 
-# --- 5. VISUAL LAYOUT ---
+# --- 6. DISPLAYING THE UI ---
 
-# Using columns to center the card perfectly
+# Center Layout
 c1, c2, c3 = st.columns([1, 6, 1])
 
 with c2:
-    st.markdown('<div class="premium-card">', unsafe_allow_html=True)
+    st.markdown('<div class="glass-card">', unsafe_allow_html=True)
     
-    # Time Display
+    # 1. Clock Display
     st.title(now.strftime('%I:%M %p'))
-    st.caption(f"{now.strftime('%A, %d %B')} | 📍 India")
     
-    st.markdown("<hr>", unsafe_allow_html=True)
+    # 2. Date Display
+    st.markdown(f"### {now.strftime('%A, %d %B')}")
+    st.caption(f"📍 India | {time_cycle}")
     
-    # Live Environment Status
-    st.markdown(f"### {season} Season {season_emoji}")
-    st.write(f"The vibe is currently **{period}**.")
+    st.markdown("---")
     
-    # Animation (Centered)
-    run_animation(season_anim, height=180)
-    
+    # 3. Live Environment Status
+    if is_festival:
+        st.header(f"🎉 {festival_name}")
+        st.write("Special festive theme applied!")
+    else:
+        st.write(f"Current Season: **{season}**")
+        if theme_style == "🌸 Aesthetic (Girly)":
+            st.write("✨ Feeling cute & productive!")
+        else:
+            st.write("🚀 Ready for business.")
+
     st.markdown('</div>', unsafe_allow_html=True)
 
-# --- 6. TEST TOOLS (Sidebar) ---
-with st.sidebar:
-    st.header("🛠️ Developer Tools")
-    if st.button("Test Winter ❄️"):
-        st.snow()
-    if st.button("Test Celebration 🎉"):
-        st.balloons()
