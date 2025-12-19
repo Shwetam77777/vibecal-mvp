@@ -6,7 +6,7 @@ from streamlit_lottie import st_lottie
 import time
 
 # --- 1. PAGE CONFIGURATION ---
-st.set_page_config(page_title="VibeCal: Ultimate", page_icon="✨", layout="wide")
+st.set_page_config(page_title="VibeCal: Ultimate", page_icon="✨", layout="centered")
 
 # --- 2. ASSETS & ANIMATIONS ---
 def load_lottieurl(url):
@@ -18,47 +18,46 @@ def load_lottieurl(url):
     except:
         return None
 
-# --- 3. TIME & SCENARIO LOGIC ---
+# --- 3. TIME & THEME LOGIC ---
 IST = pytz.timezone('Asia/Kolkata')
 now = datetime.datetime.now(IST)
 hour = now.hour
 
-# Dynamic Backgrounds (Real Photos)
+# Choose Background & Theme based on Time
 if 5 <= hour < 12:
     period = "Morning"
-    # Morning Landscape Image
-    bg_image = "https://images.unsplash.com/photo-1470252649378-9c29740c9fa8?q=80&w=2070&auto=format&fit=crop"
-    greeting = "Good Morning! 🌸"
-    theme_color = "rgba(255, 255, 255, 0.7)" # Light Glass
-    text_color = "#2c3e50"
+    # Morning Mountain View
+    bg_image = "https://images.unsplash.com/photo-1470252649378-9c29740c9fa8?q=80&w=2070"
+    greeting = "Good Morning! ☀️"
+    glass_color = "rgba(255, 255, 255, 0.25)" # Light Glass
+    text_shadow = "1px 1px 2px black"
 elif 12 <= hour < 17:
     period = "Afternoon"
-    # Bright Blue Sky/Office Image
-    bg_image = "https://images.unsplash.com/photo-1596524430615-b46475ddff6e?q=80&w=2070&auto=format&fit=crop"
+    # Bright Sky View
+    bg_image = "https://images.unsplash.com/photo-1596524430615-b46475ddff6e?q=80&w=2070"
     greeting = "Focus Mode On 🚀"
-    theme_color = "rgba(255, 255, 255, 0.85)"
-    text_color = "#1a1a1a"
+    glass_color = "rgba(255, 255, 255, 0.3)"
+    text_shadow = "1px 1px 2px black"
 elif 17 <= hour < 20:
     period = "Evening"
-    # Sunset City Image
-    bg_image = "https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?q=80&w=2113&auto=format&fit=crop"
+    # Sunset View
+    bg_image = "https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?q=80&w=2113"
     greeting = "Good Evening 🌆"
-    theme_color = "rgba(0, 0, 0, 0.6)" # Dark Glass
-    text_color = "#ffffff"
+    glass_color = "rgba(0, 0, 0, 0.5)" # Dark Glass
+    text_shadow = "0px 0px 5px black"
 else:
     period = "Night"
-    # Starry Night or Night City
-    bg_image = "https://images.unsplash.com/photo-1519681393798-2f13fbe68138?q=80&w=2070&auto=format&fit=crop"
+    # Night Sky View
+    bg_image = "https://images.unsplash.com/photo-1519681393798-2f13fbe68138?q=80&w=2070"
     greeting = "Magical Night ✨"
-    theme_color = "rgba(10, 10, 30, 0.75)" # Deep Dark Glass
-    text_color = "#e0e0e0"
+    glass_color = "rgba(0, 0, 0, 0.6)" # Darker Glass
+    text_shadow = "0px 0px 5px black"
 
-# --- 4. CSS FOR IMMERSIVE LOOK ---
+# --- 4. ADVANCED CSS (Visual Styling) ---
 st.markdown(
     f"""
     <style>
-    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;500;700&display=swap');
-    
+    /* 1. Background Image */
     .stApp {{
         background: url("{bg_image}");
         background-size: cover;
@@ -67,113 +66,140 @@ st.markdown(
         background-attachment: fixed;
     }}
     
-    /* Glassmorphism Container */
-    .glass-container {{
-        background: {theme_color};
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
-        border-radius: 25px;
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        padding: 30px;
-        margin: 20px auto;
-        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
-        color: {text_color};
+    /* 2. Text Styling (White & readable) */
+    h1, h2, h3, h4, h5, h6, p, div, label, span {{
+        color: white !important;
+        text-shadow: {text_shadow};
+        font-family: 'Helvetica Neue', sans-serif;
     }}
     
-    h1, h2, h3, p, label, div {{
-        font-family: 'Montserrat', sans-serif !important;
-        color: {text_color} !important;
+    /* 3. Glass Containers (The Blocks) */
+    [data-testid="stVerticalBlock"] > [style*="flex-direction: column;"] > [data-testid="stVerticalBlock"] {{
+        background-color: {glass_color};
+        border-radius: 20px;
+        padding: 25px;
+        backdrop-filter: blur(10px);
+        box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.3);
     }}
-    
-    /* Button Styling */
+
+    /* 4. Button Styling */
     .stButton>button {{
-        border-radius: 50px;
-        font-weight: bold;
+        background-color: white;
+        color: black !important;
+        border-radius: 25px;
         border: none;
-        transition: 0.3s;
+        font-weight: bold;
+        text-shadow: none;
+        transition: transform 0.2s;
+    }}
+    .stButton>button:hover {{
+        transform: scale(1.05);
     }}
     
-    /* Hide Default Elements */
-    #MainMenu {{visibility: hidden;}}
-    footer {{visibility: hidden;}}
+    /* 5. Input Fields */
+    input, textarea {{
+        background-color: rgba(255, 255, 255, 0.8) !important;
+        color: black !important;
+        border-radius: 10px;
+    }}
     </style>
     """,
     unsafe_allow_html=True
 )
 
-# --- 5. THE MAIN INTERFACE ---
-col_main, col_padding = st.columns([1, 0.1])
+# --- 5. APP LAYOUT ---
 
-with col_main:
-    # --- HEADER SECTION ---
-    st.markdown(f'<div class="glass-container">', unsafe_allow_html=True)
+# --- HEADER SECTION ---
+with st.container():
     st.title(f"{greeting}")
-    st.markdown(f"### {now.strftime('%A, %d %B %Y')}")
-    st.caption(f"📍 Location: India • {period} Edition")
-    st.markdown('</div>', unsafe_allow_html=True)
+    st.markdown(f"### 🗓️ {now.strftime('%A, %d %B %Y')}")
+    st.caption(f"📍 Location: India (IST) • {period} Edition")
 
-    # --- FIREWORKS & FESTIVALS ---
-    st.markdown(f'<div class="glass-container">', unsafe_allow_html=True)
-    st.markdown("### 🎭 Vibe Controller")
+# --- VIBE CONTROLLER (Fireworks & Birthday Logic) ---
+st.write("---")
+with st.container():
+    st.header("🎭 Select Your Vibe")
     
-    vibe_mode = st.radio("Select Current Vibe:", 
+    # The Radio Button
+    vibe_mode = st.radio("Choose Scene:", 
                          ["Standard Mode", "🎉 New Year / Party", "🎂 Birthday", "❄️ Winter Snow"], 
                          horizontal=True)
 
-    if vibe_mode == "🎉 New Year / Party":
-        # Fireworks Animation Lottie
-        lottie_fireworks = load_lottieurl("https://lottie.host/80e7228a-7232-4277-b952-4fd77717462c/8h3v5s9x1.json")
-        if lottie_fireworks:
-            st_lottie(lottie_fireworks, height=200, key="fireworks")
-        st.balloons()
+    col_anim, col_msg = st.columns([1, 2])
     
-    elif vibe_mode == "❄️ Winter Snow":
-        st.snow()
-        st.info("Stay warm! ☕")
+    with col_anim:
+        # 1. STANDARD MODE (Sun/Moon)
+        if vibe_mode == "Standard Mode":
+            if period == "Night":
+                # Moon Animation
+                st_lottie(load_lottieurl("https://lottie.host/a438702b-a010-449e-b7d5-d85202860d5b/b3p2R5s8x1.json"), height=150, key="moon")
+            else:
+                # Sun Animation
+                st_lottie(load_lottieurl("https://lottie.host/9355462c-6379-44d8-9477-6287950c0576/8YI5Z5vQ7e.json"), height=150, key="sun")
 
-    st.markdown('</div>', unsafe_allow_html=True)
-
-    # --- CONNECTIVITY CENTER (WhatsApp/Email) ---
-    st.markdown(f'<div class="glass-container">', unsafe_allow_html=True)
-    st.markdown("### 📲 Connectivity Hub")
-    st.write("Connect with people instantly directly from your calendar.")
-
-    col1, col2 = st.columns(2)
-    
-    # Message Logic
-    with col1:
-        contact_name = st.text_input("Name", "Client")
-        message_body = st.text_area("Message", f"Hi {contact_name}, wishing you a happy {period}!")
-    
-    with col2:
-        st.write("###### Select Platform to Send:")
+        # 2. NEW YEAR (Fireworks!)
+        elif vibe_mode == "🎉 New Year / Party":
+            # Fireworks Animation
+            st_lottie(load_lottieurl("https://lottie.host/80e7228a-7232-4277-b952-4fd77717462c/8h3v5s9x1.json"), height=150, key="fire")
+            st.balloons()
         
-        # WhatsApp Logic (Deep Link)
-        whatsapp_url = f"https://wa.me/?text={message_body.replace(' ', '%20')}"
-        st.link_button("🚀 Send via WhatsApp", whatsapp_url)
-        
-        # Email Logic (Deep Link)
-        email_url = f"mailto:?subject=Greeting%20from%20VibeCal&body={message_body.replace(' ', '%20')}"
-        st.link_button("📧 Send via Email", email_url)
-        
-        st.markdown("*Note: This opens your secure app directly.*")
-    
-    st.markdown('</div>', unsafe_allow_html=True)
+        # 3. BIRTHDAY (Cake!)
+        elif vibe_mode == "🎂 Birthday":
+            # Cake Animation
+            st_lottie(load_lottieurl("https://lottie.host/1785237c-3225-41d6-857e-12501004f7c2/lqD0b8X9v2.json"), height=150, key="cake")
+            st.balloons()
+            
+        # 4. WINTER (Snow!)
+        elif vibe_mode == "❄️ Winter Snow":
+            # Snowman Animation
+            st_lottie(load_lottieurl("https://lottie.host/5d645100-264e-4f0e-920f-08df6c205730/X7u6f3y7v2.json"), height=150, key="snow")
+            st.snow()
 
-    # --- CALENDAR & AI ---
-    st.markdown(f'<div class="glass-container">', unsafe_allow_html=True)
-    st.markdown("### 📅 Smart Schedule")
+    with col_msg:
+        if vibe_mode == "Standard Mode":
+            st.info(f"Currently in **{period} Mode**. Background updated automatically.")
+        elif vibe_mode == "🎂 Birthday":
+            st.success("Happy Birthday! 🎂 Sending you best wishes!")
+        elif vibe_mode == "🎉 New Year / Party":
+            st.warning("Let's Party! 🎆 Fireworks deployed.")
+        elif vibe_mode == "❄️ Winter Snow":
+            st.info("It's chilly! ☕ Enjoy the snowfall.")
+
+# --- CONNECTIVITY HUB ---
+st.write("---")
+with st.container():
+    st.header("📲 Connectivity Hub")
+    st.write("Draft and send messages instantly.")
+    
+    c1, c2 = st.columns(2)
+    with c1:
+        name = st.text_input("Receiver Name", "Client")
+        msg = st.text_area("Message Body", f"Hi {name}, hope you have a great {period}!")
+    
+    with c2:
+        st.write("#### Send via:")
+        # Deep Links (No API Key needed)
+        wa_link = f"https://wa.me/?text={msg}"
+        mail_link = f"mailto:?subject=VibeCal%20Greeting&body={msg}"
+        
+        st.link_button("🚀 Send via WhatsApp", wa_link)
+        st.link_button("📧 Send via Email", mail_link)
+
+# --- CALENDAR SECTION ---
+st.write("---")
+with st.container():
+    st.header("📅 Smart Schedule")
     d = st.date_input("Plan for:", now)
     
-    if st.button("🔮 Ask AI for Day Plan"):
-        with st.spinner("Analyzing weather and schedule..."):
+    if st.button("🔮 Generate AI Plan"):
+        with st.spinner("AI is thinking..."):
             time.sleep(1.5)
-            st.success("Plan Generated!")
+            st.success("AI Plan Generated!")
             if period == "Morning":
-                st.write("✅ **10:00 AM:** Deep Work (Energy High)")
-                st.write("✅ **01:00 PM:** Lunch & Walk")
+                st.write("✅ **10:00 AM:** High Focus Work")
+                st.write("✅ **01:00 PM:** Team Lunch")
             else:
                 st.write("✅ **08:00 PM:** Review Goals")
-                st.write("✅ **10:00 PM:** Sleep Mode 😴")
-    st.markdown('</div>', unsafe_allow_html=True)
+                st.write("✅ **10:30 PM:** Wind Down & Read")
 
