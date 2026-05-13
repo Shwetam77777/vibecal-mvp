@@ -24,7 +24,7 @@ VibeCal is a smart, aesthetic calendar application that changes its "Vibe" (Them
 
 1.  Clone the repository:
     ```bash
-    git clone [https://github.com/Shwetam77777/vibecal-mvp.git](https://github.com/Shwetam77777/vibecal-mvp.git)
+    git clone [https://github.com/Shweta-Mishra-ai/vibecal-mvp)
     ```
 2.  Install dependencies:
     ```bash
@@ -40,4 +40,4 @@ VibeCal is a smart, aesthetic calendar application that changes its "Vibe" (Them
 [Insert your Streamlit Share Link Here once deployed]
 
 ---
-**Built by Shweta** | Aspiring AI Engineer & Product Developer
+**Built by Shweta** | 
